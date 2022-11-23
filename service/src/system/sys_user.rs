@@ -16,7 +16,7 @@ use db::{
 use poem::Request;
 use sea_orm::{sea_query::Expr, ColumnTrait, DatabaseConnection, EntityTrait, JoinType, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, Set, TransactionTrait};
 
-use crate::utils::{
+use crate::service_utils::{
     self,
     jwt::{AuthBody, AuthPayload, Claims},
 };
@@ -46,7 +46,7 @@ pub async fn get_sort_list(db: &DatabaseConnection, page_params: PageParams, req
     }
     if let Some(x) = req.user_ids {
         if !x.is_empty() {
-            let y:Vec<&str> = x.split(',').collect();
+            let y: Vec<&str> = x.split(',').collect();
             s = s.filter(sys_user::Column::Id.is_in(y));
         }
     }
@@ -149,7 +149,7 @@ pub async fn get_un_auth_user(db: &DatabaseConnection, page_params: PageParams, 
     s = s.filter(sys_user::Column::DeletedAt.is_null());
     // 查询条件
     if let Some(x) = req.user_ids {
-        let y:Vec<&str> = x.split(',').collect();
+        let y: Vec<&str> = x.split(',').collect();
         s = s.filter(sys_user::Column::Id.is_not_in(y));
     }
     if let Some(x) = req.user_name {
@@ -547,7 +547,7 @@ pub async fn login(db: &DatabaseConnection, login_req: UserLoginReq, req: &Reque
         name: login_req.user_name.clone(), // 用户名
     };
     let token_id = scru128::new_string();
-    let token = utils::authorize(claims.clone(), token_id.clone()).await.unwrap();
+    let token = service_utils::authorize(claims.clone(), token_id.clone()).await.unwrap();
     // 成功登录后
     //  写入登录日志
 
@@ -572,7 +572,7 @@ pub async fn fresh_token(user: Claims) -> Result<AuthBody> {
         id: user.clone().id,     // 用户id
         name: user.clone().name, // 用户名
     };
-    let token = utils::authorize(claims.clone(), user.clone().token_id).await.unwrap();
+    let token = service_utils::authorize(claims.clone(), user.clone().token_id).await.unwrap();
     // 成功登录后
     // 更新原始在线日志
     super::sys_user_online::update_online(user.clone().token_id, token.clone().exp).await?;
@@ -583,7 +583,7 @@ pub async fn fresh_token(user: Claims) -> Result<AuthBody> {
 pub async fn set_login_info(req: &Request, u_id: String, user: String, msg: String, status: String, token_id: Option<String>, token: Option<AuthBody>) {
     let header = req.headers().to_owned();
     let remote_addr = req.remote_addr().to_owned();
-    let u = utils::get_client_info(header, remote_addr).await;
+    let u = service_utils::get_client_info(header, remote_addr).await;
     // 写入登录日志
     let u2 = u.clone();
     let status2 = status.clone();

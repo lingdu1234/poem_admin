@@ -1,14 +1,24 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+// 菜单授权
+pub mod auth;
+// 请求上下文，日志记录
+pub mod ctx;
+// 统一返回数据格式
+pub mod fixed_res;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+// 操作日志
+pub mod oper_log;
+// 缓存中间件
+#[cfg(feature = "cache-mem")]
+pub mod cache;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+#[cfg(feature = "cache-skytable")]
+pub mod cache_skytable;
+
+//  重新导出
+pub use auth::Auth as ApiAuth;
+#[cfg(feature = "cache-mem")]
+pub use cache::Cache;
+#[cfg(feature = "cache-skytable")]
+pub use cache_skytable::SkyTableCache;
+pub use ctx::Context as Ctx;
+pub use oper_log::OperLog;

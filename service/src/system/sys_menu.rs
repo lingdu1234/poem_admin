@@ -5,7 +5,7 @@ use db::{
     db_conn,
     system::{
         entities::{prelude::SysMenu, sys_api_db, sys_menu, sys_role_api},
-        models::sys_menu::{AddReq, EditReq, LogCacheEditReq, MenuRelated, MenuResp, Meta, SearchReq, SysMenuTree, UserMenu, SysMenuTreeAll},
+        models::sys_menu::{AddReq, EditReq, LogCacheEditReq, MenuRelated, MenuResp, Meta, SearchReq, SysMenuTree, SysMenuTreeAll, UserMenu},
     },
     DB,
 };
@@ -15,8 +15,7 @@ use sea_orm::{
     Set, TransactionTrait,
 };
 
-use super::super::service;
-use crate::utils;
+use crate::service_utils;
 
 /// get_list 获取列表
 /// page_params 分页参数
@@ -47,10 +46,10 @@ pub async fn get_sort_list(db: &DatabaseConnection, page_params: PageParams, req
         if !x.is_empty() {
             s = s.filter(sys_menu::Column::MenuType.eq(x));
         }
-    }    
+    }
     if let Some(x) = req.menu_types {
         if !x.is_empty() {
-            let y:Vec<&str> = x.split(',').collect();
+            let y: Vec<&str> = x.split(',').collect();
             s = s.filter(sys_menu::Column::MenuType.is_in(y));
         }
     }
@@ -154,7 +153,7 @@ where
     txn.commit().await?;
     let res = format!("{} 添加成功", &uid);
     // 添加api到全局
-    utils::ApiUtils::add_api(db, &uid, &reqq.api, &reqq.menu_name, &reqq.data_cache_method, &reqq.log_method).await;
+    service_utils::ApiUtils::add_api(db, &uid, &reqq.api, &reqq.menu_name, &reqq.data_cache_method, &reqq.log_method).await;
     Ok(res)
 }
 
@@ -165,7 +164,7 @@ pub async fn delete(db: &DatabaseConnection, id: &str) -> Result<String> {
             let s = SysMenu::find().filter(sys_menu::Column::Id.eq(id)).one(db).await?;
             let txn = db.begin().await?;
             if let Some(m) = s {
-                utils::ApiUtils::remove_api(&m.api).await;
+                service_utils::ApiUtils::remove_api(&m.api).await;
                 m.delete(db).await?;
             }
             txn.commit().await?;
@@ -217,9 +216,9 @@ pub async fn edit(db: &DatabaseConnection, req: EditReq) -> Result<String> {
     let up_model = act.update(db).await?; // 这个两种方式一样 都要多查询一次
     tokio::spawn(async move {
         let db = DB.get_or_init(db_conn).await;
-        utils::ApiUtils::remove_api(&s_y.api).await;
-        utils::ApiUtils::add_api(db, &up_model.id, &up_model.api, &up_model.menu_name, &up_model.data_cache_method, &up_model.log_method).await;
-        service::sys_role_api::update_api(db, (&s_y.api, &s_y.method), (&up_model.api, &up_model.method))
+        service_utils::ApiUtils::remove_api(&s_y.api).await;
+        service_utils::ApiUtils::add_api(db, &up_model.id, &up_model.api, &up_model.menu_name, &up_model.data_cache_method, &up_model.log_method).await;
+        super::sys_role_api::update_api(db, (&s_y.api, &s_y.method), (&up_model.api, &up_model.method))
             .await
             .expect("更新api失败");
     });
@@ -259,12 +258,10 @@ pub async fn get_by_id(db: &DatabaseConnection, search_req: SearchReq) -> Result
     Ok(res)
 }
 
-
-
 /// get_all_router_tree 获取全部
 /// db 数据库连接 使用db.0
 pub async fn get_all_router_tree(db: &DatabaseConnection) -> Result<Vec<SysMenuTree>> {
-    let menus = get_menus(db, true, false,true).await?;
+    let menus = get_menus(db, true, false, true).await?;
     let menu_data = self::get_menu_data(menus);
     let menu_tree = self::get_menu_tree(menu_data, "0".to_string());
 
@@ -322,7 +319,7 @@ pub async fn get_role_permissions(db: &DatabaseConnection, role_id: &str) -> Res
 pub async fn get_admin_menu_by_role_ids(db: &DatabaseConnection, role_id: &str) -> Result<Vec<SysMenuTree>> {
     let (menu_apis, _) = self::get_role_permissions(db, role_id).await?;
     //  todo 可能以后加条件判断
-    let router_all = get_menus(db, true, false,false).await?;
+    let router_all = get_menus(db, true, false, false).await?;
     //  生成menus
     let mut menus: Vec<MenuResp> = Vec::new();
     for ele in router_all {
@@ -359,7 +356,7 @@ pub fn get_menu_tree2(user_menus: Vec<SysMenuTreeAll>, pid: String) -> Vec<SysMe
 // 多写个方法，少返回点数据
 pub fn get_menu_data2(menus: Vec<sys_menu::Model>) -> Vec<SysMenuTreeAll> {
     let mut menu_res: Vec<SysMenuTreeAll> = Vec::new();
-    for  menu in menus {
+    for menu in menus {
         let menu_tree = SysMenuTreeAll { menu, children: None };
         menu_res.push(menu_tree);
     }
@@ -459,5 +456,27 @@ pub async fn get_related_api_and_db(db: &DatabaseConnection, page_params: PagePa
     })
 }
 
+/// 获取全部菜单 或者 除开按键api级别的外的路由   
+/// is_router 是否是菜单路由，用于前端生成路由   
+/// is_only_api 仅获取按键，api级别的路由   
+/// 不能同时为true   
+/// 同时false 为获取全部路由   
+/// is_only_enabled 获取启用的路由，false 为全部路由  
+pub async fn get_menus<C>(db: &C, is_router: bool, is_only_api: bool, is_only_enabled: bool) -> Result<Vec<MenuResp>>
+where
+    C: TransactionTrait + ConnectionTrait,
+{
+    let mut s = SysMenu::find().filter(sys_menu::Column::DeletedAt.is_null());
+    if is_router {
+        s = s.filter(sys_menu::Column::MenuType.ne("F"));
+    };
+    if is_only_api {
+        s = s.filter(sys_menu::Column::MenuType.eq("F"));
+    };
+    if is_only_enabled {
+        s = s.filter(sys_menu::Column::Status.eq("1"));
+    };
 
-
+    let res = s.order_by(sys_menu::Column::OrderSort, Order::Asc).into_model::<MenuResp>().all(db).await?;
+    Ok(res)
+}

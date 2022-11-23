@@ -9,8 +9,6 @@ edition = "2021"
 #
 configs = {path = "../configs"}
 db = {path = "../db"}
-# poem 
-poem = {workspace = true, default-futures="false"}
 # 
 once_cell ={workspace = true}
 # 
@@ -19,17 +17,13 @@ tokio = {workspace = true, features = ["rt-multi-thread", "macros", "parking_lot
 tracing = {workspace = true}
 #
 anyhow = {workspace = true}
-# 
-headers = {workspace = true}
-jsonwebtoken = {workspace = true}
-# 时间
-chrono = {workspace = true, features = ["serde"]}
-# serde
-serde = {workspace = true, features = ["derive"]}
+
 #  随机数
 md5 = {workspace = true}
 rand = {workspace = true}
 
+tracing-subscriber = {workspace = true, features = ["json", "env-filter", "local-time", "registry"]}
+time = {workspace = true}
 
 # sea-orm
 sea-orm = {workspace = true, default-features = false,features = ["macros", "runtime-tokio-native-tls","debug-print"]}

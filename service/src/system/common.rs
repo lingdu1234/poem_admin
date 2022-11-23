@@ -5,8 +5,6 @@ use db::common::captcha::CaptchaImage;
 use poem::web::Multipart;
 use tokio::{fs, io::AsyncWriteExt};
 
-use crate::utils;
-
 /// 获取验证码
 pub fn get_captcha() -> CaptchaImage {
     let captcha = Captcha::new(4, 130, 40);

@@ -4,7 +4,6 @@ members = [
   "api",
   "service",
   "middleware-fn",
-  "scheduled-task",
   "utils",
   "configs",
   "db",

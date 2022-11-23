@@ -1,14 +1,9 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+// api 模块
+mod system; // 系统模块
+mod test; // 测试模块
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+//  路由模块
+mod route;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+//  重新导出
+pub use route::api;
