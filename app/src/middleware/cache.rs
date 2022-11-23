@@ -186,17 +186,23 @@ impl<E: Endpoint> Endpoint for CacheEndpoint<E> {
                     match res_end {
                         Ok(v) => {
                             let res = v.into_response();
-                            let res_ctx = match res.extensions().get::<ResJsonString>() {
-                                Some(x) => x.0.clone(),
-                                None => "".to_string(),
+                            let res_ctx = match res.into_body().into_string().await {
+                                Ok(str) => str,
+                                Err(_) => "".to_string(),
                             };
+                            // let res_ctx = match res.extensions().get::<ResJsonString>() {
+                            //     Some(x) => x.0.clone(),
+                            //     None => "".to_string(),
+                            // };
+
+                            let res_ctx_ = res_ctx.clone();
 
                             tokio::spawn(async move {
                                 // 缓存数据
-                                add_cache_data(&ctx.ori_uri, &ctx.path, &data_key, res_ctx).await;
+                                add_cache_data(&ctx.ori_uri, &ctx.path, &data_key, res_ctx_).await;
                             });
 
-                            Ok(res)
+                            Ok(res_ctx.into_response())
                         }
                         Err(e) => Err(e),
                     }
@@ -207,3 +213,4 @@ impl<E: Endpoint> Endpoint for CacheEndpoint<E> {
 }
 
 // 感觉没有什么鸟用
+// 通用

@@ -125,11 +125,17 @@ dependencies = [
  "tokio",
  "tokio-stream",
  "toml",
- "tracing 0.1.37",
+ "tracing",
  "tracing-appender",
  "tracing-subscriber",
  "user-agent-parser",
 ]
+
+[[package]]
+name = "arrayvec"
+version = "0.7.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8da52d66c7071e2e3fa2a1e5c6d088fec47b593032b254f5e980de8ea54454d6"
 
 [[package]]
 name = "async-attributes"
@@ -846,7 +852,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tokio",
- "tracing 0.2.0",
+ "tracing",
 ]
 
 [[package]]
@@ -881,7 +887,7 @@ dependencies = [
  "smol",
  "thiserror",
  "tokio",
- "tracing 0.1.37",
+ "tracing",
 ]
 
 [[package]]
@@ -1199,7 +1205,7 @@ dependencies = [
  "slab",
  "tokio",
  "tokio-util",
- "tracing 0.1.37",
+ "tracing",
 ]
 
 [[package]]
@@ -1350,7 +1356,7 @@ dependencies = [
  "socket2",
  "tokio",
  "tower-service",
- "tracing 0.1.37",
+ "tracing",
  "want",
 ]
 
@@ -2231,7 +2237,7 @@ dependencies = [
  "tokio-rustls",
  "tokio-stream",
  "tokio-util",
- "tracing 0.1.37",
+ "tracing",
 ]
 
 [[package]]
@@ -2243,7 +2249,7 @@ dependencies = [
  "db",
  "poem",
  "tokio",
- "tracing 0.1.37",
+ "tracing",
  "tracing-appender",
  "tracing-subscriber",
 ]
@@ -2331,6 +2337,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bbe448f377a7d6961e30f5955f9b8d106c3f5e449d493ee1b125c1d43c2b5179"
 dependencies = [
  "proc-macro2",
+]
+
+[[package]]
+name = "r2d2"
+version = "0.8.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "51de85fb3fb6524929c8a2eb85e6b6d363de4e8c48f9e2c2eac4944abc181c93"
+dependencies = [
+ "log",
+ "parking_lot 0.12.1",
+ "scheduled-thread-pool",
 ]
 
 [[package]]
@@ -2596,6 +2613,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "rust_decimal"
+version = "1.26.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ee9164faf726e4f3ece4978b25ca877ddc6802fa77f38cdccb32c7f805ecd70c"
+dependencies = [
+ "arrayvec",
+ "num-traits",
+ "serde",
+]
+
+[[package]]
 name = "rustc_version"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2658,6 +2686,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "scheduled-thread-pool"
+version = "0.2.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "977a7519bff143a44f842fd07e80ad1329295bd71686457f18e496736f4bf9bf"
+dependencies = [
+ "parking_lot 0.12.1",
+]
+
+[[package]]
 name = "scoped_threadpool"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2709,15 +2746,19 @@ dependencies = [
  "futures-util",
  "log",
  "ouroboros",
+ "rust_decimal",
  "sea-orm-macros",
  "sea-query",
  "sea-query-binder",
  "sea-strum",
  "serde",
+ "serde_json",
  "sqlx",
  "thiserror",
- "tracing 0.1.37",
+ "time 0.3.17",
+ "tracing",
  "url",
+ "uuid",
 ]
 
 [[package]]
@@ -2731,7 +2772,7 @@ dependencies = [
  "dotenvy",
  "regex",
  "sea-schema",
- "tracing 0.1.37",
+ "tracing",
  "tracing-subscriber",
  "url",
 ]
@@ -2761,7 +2802,7 @@ dependencies = [
  "sea-orm",
  "sea-orm-cli",
  "sea-schema",
- "tracing 0.1.37",
+ "tracing",
  "tracing-subscriber",
 ]
 
@@ -2772,7 +2813,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a4f0fc4d8e44e1d51c739a68d336252a18bc59553778075d5e32649be6ec92ed"
 dependencies = [
  "chrono",
+ "rust_decimal",
  "sea-query-derive",
+ "serde_json",
+ "time 0.3.17",
+ "uuid",
 ]
 
 [[package]]
@@ -2782,8 +2827,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9c2585b89c985cfacfe0ec9fc9e7bb055b776c1a2581c4e3c6185af2b8bf8865"
 dependencies = [
  "chrono",
+ "rust_decimal",
  "sea-query",
+ "serde_json",
  "sqlx",
+ "time 0.3.17",
+ "uuid",
 ]
 
 [[package]]
@@ -2996,6 +3045,7 @@ dependencies = [
  "async-trait",
  "bb8",
  "bytes",
+ "r2d2",
  "tokio",
 ]
 
@@ -3132,6 +3182,7 @@ dependencies = [
  "percent-encoding",
  "rand 0.8.5",
  "rsa",
+ "rust_decimal",
  "serde",
  "serde_json",
  "sha1",
@@ -3141,8 +3192,10 @@ dependencies = [
  "sqlx-rt",
  "stringprep",
  "thiserror",
+ "time 0.3.17",
  "tokio-stream",
  "url",
+ "uuid",
  "whoami",
 ]
 
@@ -3158,6 +3211,7 @@ dependencies = [
  "once_cell",
  "proc-macro2",
  "quote",
+ "serde_json",
  "sha2",
  "sqlx-core",
  "sqlx-rt",
@@ -3423,7 +3477,7 @@ dependencies = [
  "futures-sink",
  "pin-project-lite",
  "tokio",
- "tracing 0.1.37",
+ "tracing",
 ]
 
 [[package]]
@@ -3450,19 +3504,8 @@ dependencies = [
  "cfg-if",
  "log",
  "pin-project-lite",
- "tracing-attributes 0.1.23",
- "tracing-core 0.1.30",
-]
-
-[[package]]
-name = "tracing"
-version = "0.2.0"
-source = "git+https://github.com/tokio-rs/tracing.git#60c60bef62972e447414a748a95b31ff9027165b"
-dependencies = [
- "cfg-if",
- "pin-project-lite",
- "tracing-attributes 0.2.0",
- "tracing-core 0.2.0",
+ "tracing-attributes",
+ "tracing-core",
 ]
 
 [[package]]
@@ -3488,16 +3531,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tracing-attributes"
-version = "0.2.0"
-source = "git+https://github.com/tokio-rs/tracing.git#60c60bef62972e447414a748a95b31ff9027165b"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "tracing-core"
 version = "0.1.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3508,14 +3541,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tracing-core"
-version = "0.2.0"
-source = "git+https://github.com/tokio-rs/tracing.git#60c60bef62972e447414a748a95b31ff9027165b"
-dependencies = [
- "once_cell",
-]
-
-[[package]]
 name = "tracing-log"
 version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3523,7 +3548,7 @@ checksum = "78ddad33d2d10b1ed7eb9d1f518a5674713876e97e5bb9b7345a7984fbb4f922"
 dependencies = [
  "lazy_static",
  "log",
- "tracing-core 0.1.30",
+ "tracing-core",
 ]
 
 [[package]]
@@ -3533,7 +3558,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bc6b213177105856957181934e4920de57730fc69bf42c37ee5bb664d406d9e1"
 dependencies = [
  "serde",
- "tracing-core 0.1.30",
+ "tracing-core",
 ]
 
 [[package]]
@@ -3552,8 +3577,8 @@ dependencies = [
  "smallvec",
  "thread_local",
  "time 0.3.17",
- "tracing 0.1.37",
- "tracing-core 0.1.30",
+ "tracing",
+ "tracing-core",
  "tracing-log",
  "tracing-serde",
 ]
@@ -3658,6 +3683,16 @@ checksum = "64dc1c37ac8edbc4f155cc61ccc319453a4dc35b2c9f07513ce93e1bd7a85052"
 dependencies = [
  "onig",
  "yaml-rust",
+]
+
+[[package]]
+name = "uuid"
+version = "1.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "422ee0de9031b5b948b97a8fc04e3aa35230001a722ddd27943e0be31564ce4c"
+dependencies = [
+ "getrandom 0.2.8",
+ "serde",
 ]
 
 [[package]]

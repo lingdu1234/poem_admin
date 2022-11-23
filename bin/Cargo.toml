@@ -11,12 +11,12 @@ version = "0.1.0"
 app = {path = "../app"}
 configs = {path = "../configs"}
 db = {path = "../db"}
+# poem
+poem = { workspace = true, features = ["static-files", "rustls", "compression", "multipart"]}
 #
-poem = {version = "1", features = ["static-files", "rustls", "compression", "multipart"]}
-# poem = {git="https://github.com/poem-web/poem.git", branch = "master", features = ["static-files", "rustls", "compression", "multipart"]}
-#
-tracing = "0.1"
-tracing-appender = "0.2"
-# tracing-log = "0.1"
-tokio = {version = "1", features = ["rt-multi-thread", "macros", "time"]}
-tracing-subscriber = {version = "0.3", features = ["json", "env-filter", "local-time", "registry"]}
+tracing = { workspace = true}
+tracing-appender = { workspace = true}
+tracing-subscriber = { workspace = true, features = ["json", "env-filter", "local-time", "registry"]}
+# 
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "time"]}
+

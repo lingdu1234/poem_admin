@@ -9,23 +9,22 @@ version = "0.1.0"
 #
 configs = {path = "../configs"}
 #
-poem = {version = "1", features = ["static-files", "rustls", "anyhow"]}
-# poem = {git="https://github.com/poem-web/poem.git", branch = "master", features = ["static-files", "rustls", "compression", "multipart"]}
+poem = {workspace = true, features = ["static-files", "rustls", "anyhow"]}
 #
-chrono = {version = "0.4", features = ["serde"]}
-once_cell = "1"
-serde = {version = "1", features = ["derive"]}
-serde_json = "1"
-tokio = {version = "1", features = ["rt-multi-thread", "macros", "parking_lot", "signal"]}
-tracing = {git = "https://github.com/tokio-rs/tracing.git"}
+chrono = {workspace = true, features = ["serde"]}
+once_cell = {workspace = true}
+# 
+serde = {workspace = true, features = ["derive"]}
+serde_json = {workspace = true}
+# 
+tokio = {workspace = true, features = ["rt-multi-thread", "macros", "parking_lot", "signal"]}
+# 
+tracing = {workspace = true }
 
-[dependencies.sea-orm]
-default-features = false
-features = ["macros", "runtime-tokio-native-tls","with-chrono"]
-version = "0"
+# sea-orm
+sea-orm = {workspace = true, default-features = false,features = ["macros", "runtime-tokio-native-tls","with-chrono"]}
 
 [features]
-# default = ["postgres"]
 default = ["postgres", "mysql", "sqlite"]
 mysql = ["sea-orm/sqlx-mysql"]
 postgres = ["sea-orm/sqlx-postgres"]

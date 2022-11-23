@@ -2,6 +2,8 @@
 pub mod auth;
 // 请求上下文，日志记录
 pub mod ctx;
+// 统一返回数据格式
+pub mod fixed_res;
 
 // 操作日志
 pub mod oper_log;
