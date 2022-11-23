@@ -95,6 +95,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "216261ddc8289130e551ddcd5ce8a064710c0d064a4d2895c67151c92b5443f6"
 
 [[package]]
+name = "api"
+version = "0.1.0"
+
+[[package]]
 name = "app"
 version = "0.1.0"
 dependencies = [
@@ -129,6 +133,21 @@ dependencies = [
  "tracing-appender",
  "tracing-subscriber",
  "user-agent-parser",
+]
+
+[[package]]
+name = "app-service"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "captcha_rust",
+ "chrono",
+ "configs",
+ "db",
+ "poem",
+ "scru128",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -1658,6 +1677,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "middleware-fn"
+version = "0.1.0"
+
+[[package]]
 name = "migration"
 version = "0.1.0"
 dependencies = [
@@ -2686,6 +2709,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "scheduled-task"
+version = "0.1.0"
+
+[[package]]
 name = "scheduled-thread-pool"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3683,6 +3710,26 @@ checksum = "64dc1c37ac8edbc4f155cc61ccc319453a4dc35b2c9f07513ce93e1bd7a85052"
 dependencies = [
  "onig",
  "yaml-rust",
+]
+
+[[package]]
+name = "utils"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "configs",
+ "db",
+ "headers",
+ "jsonwebtoken",
+ "md5",
+ "once_cell",
+ "poem",
+ "rand 0.8.5",
+ "sea-orm",
+ "serde",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]

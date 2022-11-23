@@ -1,0 +1,27 @@
+[package]
+name = "app-service"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+#
+configs = {path = "../configs"}
+db = {path = "../db"}
+# poem 
+poem = {workspace = true, features = ["static-files", "rustls", "compression", "multipart", "sse"]}
+#
+anyhow = {workspace = true}
+
+
+# 用于生成可排序的唯一id
+scru128 = {workspace = true}
+#  tokio
+tokio = {workspace = true, features = ["rt-multi-thread", "macros", "parking_lot", "signal", "time"]}
+# 验证码
+captcha_rust = {workspace = true}
+# 时间
+chrono = {workspace = true, features = ["serde"]}
+# tracing
+tracing = {workspace = true}
