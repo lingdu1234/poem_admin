@@ -3,11 +3,11 @@ use db::{
     common::res::{ListData, PageParams, Res},
     db_conn,
     system::{
-        entities::sys_role,
         models::{
-            sys_role::{AddOrCancelAuthRoleReq, AddReq, DataScopeReq, DeleteReq, EditReq, Resp, SearchReq, StatusReq, UpdateAuthRoleReq},
-            sys_user::{SearchReq as UserSearchReq, UserResp, UserWithDept},
+            sys_role::{AddOrCancelAuthRoleReq, DataScopeReq, SysRoleAddReq, SysRoleDeleteReq, SysRoleEditReq, SysRoleResp, SysRoleSearchReq, SysRoleStatusReq, UpdateAuthRoleReq},
+            sys_user::{SysUserSearchReq, UserResp, UserWithDept},
         },
+        prelude::SysRoleModel,
     },
     DB,
 };
@@ -19,7 +19,7 @@ use poem::{
 /// get_list 获取列表
 /// page_params 分页参数
 #[handler]
-pub async fn get_sort_list(Query(page_params): Query<PageParams>, Query(req): Query<SearchReq>) -> Res<ListData<sys_role::Model>> {
+pub async fn get_sort_list(Query(page_params): Query<PageParams>, Query(req): Query<SysRoleSearchReq>) -> Res<ListData<SysRoleModel>> {
     let db = DB.get_or_init(db_conn).await;
     let res = system::sys_role::get_sort_list(db, page_params, req).await;
     match res {
@@ -30,7 +30,7 @@ pub async fn get_sort_list(Query(page_params): Query<PageParams>, Query(req): Qu
 
 /// add 添加
 #[handler]
-pub async fn add(Json(req): Json<AddReq>, user: Claims) -> Res<String> {
+pub async fn add(Json(req): Json<SysRoleAddReq>, user: Claims) -> Res<String> {
     let db = DB.get_or_init(db_conn).await;
     let res = system::sys_role::add(db, req, &user.id).await;
     match res {
@@ -41,7 +41,7 @@ pub async fn add(Json(req): Json<AddReq>, user: Claims) -> Res<String> {
 
 /// delete 完全删除
 #[handler]
-pub async fn delete(Json(delete_req): Json<DeleteReq>) -> Res<String> {
+pub async fn delete(Json(delete_req): Json<SysRoleDeleteReq>) -> Res<String> {
     let db = DB.get_or_init(db_conn).await;
     let res = system::sys_role::delete(db, delete_req).await;
     match res {
@@ -52,7 +52,7 @@ pub async fn delete(Json(delete_req): Json<DeleteReq>) -> Res<String> {
 
 // edit 修改
 #[handler]
-pub async fn edit(Json(edit_req): Json<EditReq>, user: Claims) -> Res<String> {
+pub async fn edit(Json(edit_req): Json<SysRoleEditReq>, user: Claims) -> Res<String> {
     let db = DB.get_or_init(db_conn).await;
     let res = system::sys_role::edit(db, edit_req, &user.id).await;
     match res {
@@ -63,7 +63,7 @@ pub async fn edit(Json(edit_req): Json<EditReq>, user: Claims) -> Res<String> {
 
 // set_status 修改状态
 #[handler]
-pub async fn change_status(Json(req): Json<StatusReq>) -> Res<String> {
+pub async fn change_status(Json(req): Json<SysRoleStatusReq>) -> Res<String> {
     let db = DB.get_or_init(db_conn).await;
     let res = system::sys_role::set_status(db, req).await;
     match res {
@@ -84,7 +84,7 @@ pub async fn set_data_scope(Json(req): Json<DataScopeReq>) -> Res<String> {
 
 /// get_user_by_id 获取用户Id获取用户
 #[handler]
-pub async fn get_by_id(Query(req): Query<SearchReq>) -> Res<Resp> {
+pub async fn get_by_id(Query(req): Query<SysRoleSearchReq>) -> Res<SysRoleResp> {
     let db = DB.get_or_init(db_conn).await;
     let res = system::sys_role::get_by_id(db, req).await;
     match res {
@@ -95,7 +95,7 @@ pub async fn get_by_id(Query(req): Query<SearchReq>) -> Res<Resp> {
 
 /// get_all 获取全部
 #[handler]
-pub async fn get_all() -> Res<Vec<Resp>> {
+pub async fn get_all() -> Res<Vec<SysRoleResp>> {
     let db = DB.get_or_init(db_conn).await;
     let res = system::sys_role::get_all(db).await;
     match res {
@@ -106,7 +106,7 @@ pub async fn get_all() -> Res<Vec<Resp>> {
 
 /// get_role_menu 获取角色授权菜单id数组
 #[handler]
-pub async fn get_role_menu(Query(req): Query<SearchReq>) -> Res<Vec<String>> {
+pub async fn get_role_menu(Query(req): Query<SysRoleSearchReq>) -> Res<Vec<String>> {
     let db = DB.get_or_init(db_conn).await;
     match req.role_id {
         None => Res::with_msg("role_id不能为空"),
@@ -122,7 +122,7 @@ pub async fn get_role_menu(Query(req): Query<SearchReq>) -> Res<Vec<String>> {
 
 /// get_role_dept 获取角色授权部门id数组
 #[handler]
-pub async fn get_role_dept(Query(req): Query<SearchReq>) -> Res<Vec<String>> {
+pub async fn get_role_dept(Query(req): Query<SysRoleSearchReq>) -> Res<Vec<String>> {
     match req.role_id {
         None => Res::with_msg("role_id不能为空"),
         Some(id) => {
@@ -137,7 +137,7 @@ pub async fn get_role_dept(Query(req): Query<SearchReq>) -> Res<Vec<String>> {
 }
 
 #[handler]
-pub async fn get_auth_users_by_role_id(Query(mut req): Query<UserSearchReq>, Query(page_params): Query<PageParams>) -> Res<ListData<UserWithDept>> {
+pub async fn get_auth_users_by_role_id(Query(mut req): Query<SysUserSearchReq>, Query(page_params): Query<PageParams>) -> Res<ListData<UserWithDept>> {
     let db = DB.get_or_init(db_conn).await;
     let role_id = match req.role_id.clone() {
         None => return Res::with_err("角色Id不能为空"),
@@ -156,7 +156,7 @@ pub async fn get_auth_users_by_role_id(Query(mut req): Query<UserSearchReq>, Que
 }
 
 #[handler]
-pub async fn get_un_auth_users_by_role_id(Query(mut req): Query<UserSearchReq>, Query(page_params): Query<PageParams>) -> Res<ListData<UserResp>> {
+pub async fn get_un_auth_users_by_role_id(Query(mut req): Query<SysUserSearchReq>, Query(page_params): Query<PageParams>) -> Res<ListData<UserResp>> {
     let db = DB.get_or_init(db_conn).await;
     let role_id = match req.role_id.clone() {
         None => return Res::with_err("角色Id不能为空"),

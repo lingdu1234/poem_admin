@@ -4,12 +4,12 @@ pub struct ReqCtx {
     pub path: String,
     pub path_params: String,
     pub method: String,
-    pub user: UserInfo,
+    pub user: UserInfoCtx,
     pub data: String,
 }
 
 #[derive(Debug, Clone, Default)]
-pub struct UserInfo {
+pub struct UserInfoCtx {
     pub id: String,
     pub token_id: String,
     pub name: String,

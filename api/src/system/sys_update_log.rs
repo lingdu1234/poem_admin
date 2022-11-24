@@ -3,8 +3,8 @@ use db::{
     common::res::Res,
     db_conn,
     system::{
-        entities::sys_update_log,
-        models::sys_update_log::{AddReq, DeleteReq, EditReq},
+        models::sys_update_log::{SysUpdateLogAddReq, SysUpdateLogDeleteReq, SysUpdateLogEditReq},
+        prelude::SysUpdateLogModel,
     },
     DB,
 };
@@ -12,7 +12,7 @@ use poem::{handler, web::Json};
 
 /// add 添加
 #[handler]
-pub async fn add(Json(req): Json<AddReq>, user: Claims) -> Res<String> {
+pub async fn add(Json(req): Json<SysUpdateLogAddReq>, user: Claims) -> Res<String> {
     let db = DB.get_or_init(db_conn).await;
     let res = system::sys_update_log::add(db, req, &user.id).await;
     match res {
@@ -23,7 +23,7 @@ pub async fn add(Json(req): Json<AddReq>, user: Claims) -> Res<String> {
 
 /// delete 完全删除
 #[handler]
-pub async fn delete(Json(req): Json<DeleteReq>) -> Res<String> {
+pub async fn delete(Json(req): Json<SysUpdateLogDeleteReq>) -> Res<String> {
     let db = DB.get_or_init(db_conn).await;
     let res = system::sys_update_log::soft_delete(db, &req.id).await;
     match res {
@@ -34,7 +34,7 @@ pub async fn delete(Json(req): Json<DeleteReq>) -> Res<String> {
 
 // edit 修改
 #[handler]
-pub async fn edit(Json(req): Json<EditReq>, user: Claims) -> Res<String> {
+pub async fn edit(Json(req): Json<SysUpdateLogEditReq>, user: Claims) -> Res<String> {
     let db = DB.get_or_init(db_conn).await;
     let res = system::sys_update_log::edit(db, req, &user.id).await;
     match res {
@@ -45,7 +45,7 @@ pub async fn edit(Json(req): Json<EditReq>, user: Claims) -> Res<String> {
 
 /// get_all 获取全部
 #[handler]
-pub async fn get_all() -> Res<Vec<sys_update_log::Model>> {
+pub async fn get_all() -> Res<Vec<SysUpdateLogModel>> {
     let db = DB.get_or_init(db_conn).await;
     let res = system::sys_update_log::get_all(db).await;
     match res {

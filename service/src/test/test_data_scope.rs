@@ -3,7 +3,8 @@ use db::{
     common::res::{ListData, PageParams},
     test::{
         entities::{prelude::TestDataScope, test_data_scope},
-        models::test_data_scope::{AddReq, DeleteReq, SearchReq},
+        models::test_data_scope::{TestDataScopeAddReq, TestDataScopeDeleteReq, TestDataScopeSearchReq},
+        prelude::TestDataScopeModel,
     },
 };
 use sea_orm::{ColumnTrait, ConnectionTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder, Set, TransactionTrait};
@@ -11,7 +12,7 @@ use sea_orm::{ColumnTrait, ConnectionTrait, DatabaseConnection, EntityTrait, Pag
 /// get_list 获取列表
 /// page_params 分页参数
 /// db 数据库连接 使用db.0
-pub async fn get_sort_list(db: &DatabaseConnection, page_params: PageParams, search_req: SearchReq, user_id: &str) -> Result<ListData<test_data_scope::Model>> {
+pub async fn get_sort_list(db: &DatabaseConnection, page_params: PageParams, search_req: TestDataScopeSearchReq, user_id: &str) -> Result<ListData<TestDataScopeModel>> {
     let page_num = page_params.page_num.unwrap_or(1);
     let page_per_size = page_params.page_size.unwrap_or(10);
     //  生成查询条件
@@ -49,7 +50,7 @@ pub async fn get_sort_list(db: &DatabaseConnection, page_params: PageParams, sea
 }
 
 /// add 添加
-pub async fn add<C>(db: &C, req: AddReq, user_id: &str) -> Result<String>
+pub async fn add<C>(db: &C, req: TestDataScopeAddReq, user_id: &str) -> Result<String>
 where
     C: TransactionTrait + ConnectionTrait,
 {
@@ -64,7 +65,7 @@ where
 }
 
 /// delete 完全删除
-pub async fn delete(db: &DatabaseConnection, delete_req: DeleteReq) -> Result<String> {
+pub async fn delete(db: &DatabaseConnection, delete_req: TestDataScopeDeleteReq) -> Result<String> {
     let mut s = TestDataScope::delete_many();
 
     s = s.filter(test_data_scope::Column::Id.is_in(delete_req.ids));

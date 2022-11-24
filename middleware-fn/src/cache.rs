@@ -7,10 +7,7 @@ use std::{
 
 use app_service::service_utils::{api_utils::ALL_APIS, jwt};
 use configs::CFG;
-use db::common::{
-    ctx::{ApiInfo, ReqCtx},
-    res::ResJsonString,
-};
+use db::common::ctx::{ApiInfo, ReqCtx};
 use once_cell::sync::Lazy;
 use poem::{Endpoint, IntoResponse, Middleware, Request, Response, Result};
 use tokio::sync::Mutex;

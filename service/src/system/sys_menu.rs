@@ -5,7 +5,7 @@ use db::{
     db_conn,
     system::{
         entities::{prelude::SysMenu, sys_api_db, sys_menu, sys_role_api},
-        models::sys_menu::{AddReq, EditReq, LogCacheEditReq, MenuRelated, MenuResp, Meta, SearchReq, SysMenuTree, SysMenuTreeAll, UserMenu},
+        models::sys_menu::{LogCacheEditReq, MenuRelated, MenuResp, Meta, SysMenuAddReq, SysMenuEditReq, SysMenuSearchReq, SysMenuTree, SysMenuTreeAll, UserMenu},
     },
     DB,
 };
@@ -20,7 +20,7 @@ use crate::service_utils;
 /// get_list 获取列表
 /// page_params 分页参数
 /// db 数据库连接 使用db.0
-pub async fn get_sort_list(db: &DatabaseConnection, page_params: PageParams, req: SearchReq) -> Result<ListData<sys_menu::Model>> {
+pub async fn get_sort_list(db: &DatabaseConnection, page_params: PageParams, req: SysMenuSearchReq) -> Result<ListData<sys_menu::Model>> {
     let page_num = page_params.page_num.unwrap_or(1);
     let page_per_size = page_params.page_size.unwrap_or(u32::MAX as u64);
     //  生成查询条件
@@ -79,7 +79,7 @@ pub async fn get_sort_list(db: &DatabaseConnection, page_params: PageParams, req
     Ok(res)
 }
 
-pub async fn check_router_is_exist_update(db: &DatabaseConnection, req: EditReq) -> Result<bool> {
+pub async fn check_router_is_exist_update(db: &DatabaseConnection, req: SysMenuEditReq) -> Result<bool> {
     let s1 = SysMenu::find()
         .filter(sys_menu::Column::Path.eq(req.path.clone()))
         .filter(sys_menu::Column::Pid.eq(req.pid.clone()))
@@ -95,7 +95,7 @@ pub async fn check_router_is_exist_update(db: &DatabaseConnection, req: EditReq)
     Ok(count1 > 0 || count2 > 0)
 }
 
-pub async fn check_router_is_exist_add<C>(db: &C, req: AddReq) -> Result<bool>
+pub async fn check_router_is_exist_add<C>(db: &C, req: SysMenuAddReq) -> Result<bool>
 where
     C: TransactionTrait + ConnectionTrait,
 {
@@ -112,7 +112,7 @@ where
 }
 
 /// add 添加
-pub async fn add<C>(db: &C, req: AddReq) -> Result<String>
+pub async fn add<C>(db: &C, req: SysMenuAddReq) -> Result<String>
 where
     C: TransactionTrait + ConnectionTrait,
 {
@@ -175,7 +175,7 @@ pub async fn delete(db: &DatabaseConnection, id: &str) -> Result<String> {
 }
 
 // edit 修改
-pub async fn edit(db: &DatabaseConnection, req: EditReq) -> Result<String> {
+pub async fn edit(db: &DatabaseConnection, req: SysMenuEditReq) -> Result<String> {
     //  检查数据是否存在
     if check_router_is_exist_update(db, req.clone()).await? {
         return Err(anyhow!("路径或者名称重复"));
@@ -240,7 +240,7 @@ pub async fn update_log_cache_method(db: &DatabaseConnection, req: LogCacheEditR
 }
 
 /// get_user_by_id 获取用户Id获取用户
-pub async fn get_by_id(db: &DatabaseConnection, search_req: SearchReq) -> Result<MenuResp> {
+pub async fn get_by_id(db: &DatabaseConnection, search_req: SysMenuSearchReq) -> Result<MenuResp> {
     let mut s = SysMenu::find();
     s = s.filter(sys_menu::Column::DeletedAt.is_null());
     //
@@ -270,7 +270,7 @@ pub async fn get_all_router_tree(db: &DatabaseConnection) -> Result<Vec<SysMenuT
 
 /// get_all_menu_tree 获取全部
 /// db 数据库连接 使用db.0
-pub async fn get_all_enabled_menu_tree(db: &DatabaseConnection, page_params: PageParams, req: SearchReq) -> Result<Vec<SysMenuTreeAll>> {
+pub async fn get_all_enabled_menu_tree(db: &DatabaseConnection, page_params: PageParams, req: SysMenuSearchReq) -> Result<Vec<SysMenuTreeAll>> {
     let menus = get_sort_list(db, page_params, req).await?;
     let menu_data = self::get_menu_data2(menus.list);
     let menu_tree = self::get_menu_tree2(menu_data, "0".to_string());
@@ -428,7 +428,7 @@ where
     Ok(res)
 }
 
-pub async fn get_related_api_and_db(db: &DatabaseConnection, page_params: PageParams, req: SearchReq) -> Result<ListData<MenuRelated>> {
+pub async fn get_related_api_and_db(db: &DatabaseConnection, page_params: PageParams, req: SysMenuSearchReq) -> Result<ListData<MenuRelated>> {
     let menus = self::get_sort_list(db, page_params, req).await?;
     let mut res: Vec<MenuRelated> = Vec::new();
     for item in menus.list {

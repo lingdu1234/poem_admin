@@ -1,7 +1,7 @@
 use app_service::service_utils::jwt::Claims;
 use bytes::Bytes;
 use configs::CFG;
-use db::common::ctx::{ReqCtx, UserInfo};
+use db::common::ctx::{ReqCtx, UserInfoCtx};
 use poem::{http::StatusCode, Body, Endpoint, Error, FromRequest, Middleware, Request, Result};
 
 /// req上下文注入中间件 同时进行jwt授权验证
@@ -29,7 +29,7 @@ impl<E: Endpoint> Endpoint for ContextEndpoint<E> {
         // 请求信息ctx注入
         let user = match Claims::from_request_without_body(&req).await {
             Err(e) => return Err(e),
-            Ok(claims) => UserInfo {
+            Ok(claims) => UserInfoCtx {
                 id: claims.id,
                 token_id: claims.token_id,
                 name: claims.name,

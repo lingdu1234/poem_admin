@@ -10,15 +10,13 @@
 
 An Admin panel build with [axum](https://github.com/tokio-rs/axum)/[poem](https://github.com/poem-web/poem),[sea-orm](https://github.com/SeaQL/sea-orm),[vue3](https://github.com/vuejs/core) etc.
 
-
-## front-end：
-
+## front-end:     
 https://github.com/lingdu1234/IUI314
+
 
 ## Preview：
 [iui314.vercel.app](https://iui314.vercel.app/#/)
 [preview iui314preview](https://iui314preview.iu1314.top/)
-
 
 ## Completed
 
@@ -42,7 +40,7 @@ https://github.com/lingdu1234/IUI314
 
 - [x] Role-change: change the Permissions by change user's role。
 
-- [x] Data-Permissions：all-permissions，only-department-permissions，department-permissions-and-the-department-is-under-your-department，Custom-permissions，permissions of yourself (five modes)
+- [x] Data-Permissions：all-permissions，only-department-permissions，department-permissions-and-the-department-is-undert-your-department，Custom-permissions，permissions of yourself (five modes)
 
 - [x] department-change：an user can set a lot of department ,but one is enabled,can be changed,and the permissions is changed by change department；
 
